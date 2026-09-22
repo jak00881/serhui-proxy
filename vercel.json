@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "regions": ["sin1"],
+  "rewrites": [
+    { "source": "/api/ws", "destination": "/api/ws" },
+    { "source": "/(.*)", "destination": "/api/proxy" }
+  ],
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 300
+    }
+  }
+}
