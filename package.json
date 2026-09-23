@@ -1,14 +1,15 @@
 {
   "name": "serhui-proxy",
   "version": "1.0.0",
-  "description": "V2Ray VLESS-over-WS Proxy Server",
-  "main": "server.js",
+  "description": "V2Ray VLESS-over-WS Proxy Server for Render",
+  "type": "module",
+  "main": "server-vless.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node server-vless.js",
+    "dev": "node server-vless.js"
   },
   "dependencies": {
-    "ws": "^8.18.0"
+    "hono": "^4.0.0"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -1,8 +1,7 @@
-// Render.com V2Ray VLESS-over-WS 服务器
-// 兼容原 Vercel Worker 功能
+// Render.com HTTP 代理服务器（修复版）
 
 const http = require('http');
-const WebSocket = require('ws');
+const https = require('https');
 
 const PORT = process.env.PORT || 8080;
 
@@ -13,41 +12,6 @@ function isAllowedHost(host) {
   return ALLOWED_SUFFIXES.some(suffix => host.endsWith(suffix));
 }
 
-// WebSocket 服务器
-const wss = new WebSocket.Server({ 
-  path: '/api/ws',
-  noServer: true 
-});
-
-wss.on('connection', (ws, req) => {
-  console.log('WebSocket connection established');
-  
-  let targetSocket = null;
-  let clientClosed = false;
-  let serverClosed = false;
-  
-  ws.on('message', (data) => {
-    if (targetSocket && !serverClosed) {
-      targetSocket.write(data);
-    }
-  });
-  
-  ws.on('error', (err) => {
-    console.error('WebSocket error:', err);
-    if (!clientClosed) {
-      ws.close();
-      clientClosed = true;
-    }
-  });
-  
-  ws.on('close', () => {
-    clientClosed = true;
-    if (!serverClosed && targetSocket) {
-      targetSocket.end();
-    }
-  });
-});
-
 // HTTP 服务器
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
@@ -56,14 +20,6 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ status: 'ok', timestamp: Date.now() }));
-    return;
-  }
-  
-  // WebSocket 升级请求
-  if (url.pathname === '/api/ws' && req.headers.upgrade === 'websocket') {
-    wss.handleUpgrade(req, req.socket, Buffer.alloc(0), (ws) => {
-      wss.emit('connection', ws, req);
-    });
     return;
   }
   
@@ -109,7 +65,20 @@ const server = http.createServer(async (req, res) => {
     });
     
     res.writeHead(response.status, headers);
-    response.body.pipe(res);
+    
+    // 流式传输响应体
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      
+      const chunk = decoder.decode(value, { stream: true });
+      res.write(chunk);
+    }
+    
+    res.end();
     
   } catch (err) {
     console.error('Proxy error:', err);
@@ -118,13 +87,8 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-// 启动服务器
-wss.on('listening', () => {
-  console.log('WebSocket server ready');
-});
-
 server.listen(PORT, () => {
-  console.log(`V2Ray proxy server running on port ${PORT}`);
+  console.log(`HTTP proxy server running on port ${PORT}`);
 });
 
 module.exports = server;
