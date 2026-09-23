@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: serhui-proxy
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    instanceType: free
+    region: singapore
+    envVars:
+      - key: NODE_ENV
+        value: production
+    disk:
+      mountPath: /data
+      sizeGB: 1

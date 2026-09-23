@@ -1,9 +1,16 @@
 {
   "name": "serhui-proxy",
   "version": "1.0.0",
-  "private": true,
-  "description": "Google API reverse proxy + VLESS-over-WebSocket tunnel on Vercel (sin1)",
+  "description": "V2Ray VLESS-over-WS Proxy Server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
   "dependencies": {
     "ws": "^8.18.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
