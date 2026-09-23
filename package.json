@@ -1,15 +1,14 @@
 {
   "name": "serhui-proxy",
   "version": "1.0.0",
-  "description": "V2Ray VLESS-over-WS Proxy Server for Render",
-  "type": "module",
-  "main": "server-vless.js",
+  "private": true,
+  "description": "VLESS-over-WebSocket tunnel + Google API reverse proxy, deployable on Render (singapore)",
+  "main": "server.js",
   "scripts": {
-    "start": "node server-vless.js",
-    "dev": "node server-vless.js"
+    "start": "node server.js"
   },
   "dependencies": {
-    "hono": "^4.0.0"
+    "ws": "^8.18.0"
   },
   "engines": {
     "node": ">=18.0.0"

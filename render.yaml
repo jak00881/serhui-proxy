@@ -3,17 +3,16 @@ services:
     name: serhui-proxy
     env: node
     buildCommand: npm install
-    startCommand: node server-vless.js
+    startCommand: node server.js
     healthCheckPath: /health
     instanceType: free
     region: singapore
     envVars:
       - key: NODE_ENV
         value: production
-      - key: VLESS_UUID
-        value: 7ec6d45a-9ef0-4418-8c92-f076448e9c09
-      - key: VLESS_FLOW
-        value: xtls-rprx-vision
-    disk:
-      mountPath: /data
-      sizeGB: 1
+      # 隧道 UUID；留空则用代码内置默认值（与 mihomo 客户端一致）。
+      # - key: TUNNEL_UUID
+      #   value: 7ec6d45a-9ef0-4418-8c92-f076448e9c09
+      # 反代白名单（逗号分隔后缀），默认只放行 .googleapis.com。
+      # - key: ALLOWED_SUFFIXES
+      #   value: .googleapis.com,.googleusercontent.com
